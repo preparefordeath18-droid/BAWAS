@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAWAS - Barangay Waste Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Wrapper */
+        .login-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 520px;
+            padding: 20px;
+        }
+
+        /* ── Card: frosted glass ── */
+        .login-card {
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            /* Push card up to cover the BAWAS logo in background */
+            margin-top: -60px;
+        }
+
+        /* ── Top branding section ── */
+        .card-header {
+            padding: 36px 60px 28px;
+            text-align: center;
+            background: linear-gradient(160deg, #f9fff9 0%, #e8f5e9 60%, #e3f2fd 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .card-header-logo {
+            font-size: 48px;
+            line-height: 1;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+        }
+
+        .card-header h1 {
+            font-size: 46px;
+            font-weight: 900;
+            letter-spacing: 6px;
+            line-height: 1;
+            margin-bottom: 6px;
+            text-shadow: none;
+            /* Green to blue gradient text */
+            background: linear-gradient(135deg, #2e7d32 0%, #1565C0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-header-divider {
+            height: 2px;
+            background: linear-gradient(to right, #2e7d32, #1976D2);
+            border-radius: 2px;
+            margin: 12px auto;
+            width: 50%;
+            opacity: 0.5;
+        }
+
+        .card-header p {
+            font-size: 11.5px;
+            color: #555;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            line-height: 1.5;
+            text-shadow: none;
+        }
+
+        /* ── Form body: slightly more opaque ── */
+        .card-body {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 28px 60px 34px;
+            border-top: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .welcome-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 3px;
+        }
+
+        .welcome-text p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* User type toggle */
+        .type-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
+        }
+
+        .type-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .type-btn {
+            padding: 12px 10px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.7);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .type-btn .icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .type-btn:hover {
+            border-color: #2e7d32;
+            background: #f1f8f1;
+            color: #2e7d32;
+        }
+
+        .type-btn.active {
+            border-color: #2e7d32;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        /* Form fields */
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #333;
+            background: rgba(255,255,255,0.85);
+            transition: border-color 0.2s, background 0.2s;
+            outline: none;
+        }
+
+        .field input:focus {
+            border-color: #2e7d32;
+            background: white;
+        }
+
+        /* Login button */
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2e7d32 0%, #1565C0 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 6px;
+            letter-spacing: 0.5px;
+            transition: opacity 0.2s, transform 0.15s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-login:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        /* Error */
+        .error-msg {
+            color: #e53935;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+            min-height: 18px;
+            font-weight: 500;
+        }
+
+        /* Demo accounts */
+        .demo-box {
+            margin-top: 18px;
+            padding: 12px 14px;
+            background: rgba(245,245,245,0.9);
+            border-radius: 10px;
+            border-left: 3px solid #2e7d32;
+        }
+
+        .demo-box p {
+            font-size: 12px;
+            color: #666;
+            margin: 3px 0;
+            line-height: 1.6;
+        }
+
+        .demo-box strong {
+            color: #333;
+        }
+
+        /* Footer */
+        .login-footer {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.85);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-card">
+
+            <!-- Branding — blends with background -->
+            <div class="card-header">
+                <div class="card-header-logo">♻️</div>
+                <h1>BAWAS</h1>
+                <div class="card-header-divider"></div>
+                <p>Barangay Waste Monitoring and Management Platform</p>
+            </div>
+
+            <!-- Login form — slightly more solid -->
+            <div class="card-body">
+                <div class="welcome-text">
+                    <h2>Welcome! 👋</h2>
+                    <p>Sign in to access your dashboard</p>
+                </div>
+
+                <p class="type-label">Login as</p>
+                <div class="type-grid">
+                    <button class="type-btn active" id="btnAdmin" onclick="setUserType('admin')">
+                        <span class="icon">🏛️</span>
+                        Barangay Admin
+                    </button>
+                    <button class="type-btn" id="btnResident" onclick="setUserType('resident')">
+                        <span class="icon">👤</span>
+                        Resident
+                    </button>
+                </div>
+                <input type="hidden" id="userType" value="admin">
+
+                <div class="field">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="Enter your username">
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter your password"
+                        onkeydown="if(event.key==='Enter') login()">
+                </div>
+
+                <button class="btn-login" onclick="login()">Sign In →</button>
+                <div class="error-msg" id="errorMsg"></div>
+
+                <div class="demo-box">
+                    <p><strong>Demo Accounts:</strong></p>
+                    <p>🏛️ Admin — <strong>admin</strong> / <strong>admin123</strong></p>
+                    <p>👤 Resident — <strong>resident</strong> / <strong>resident123</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-footer">© 2026 BAWAS · Barangay Waste Management Platform</div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        function setUserType(type) {
+            document.getElementById('userType').value = type;
+            document.getElementById('btnAdmin').classList.toggle('active', type === 'admin');
+            document.getElementById('btnResident').classList.toggle('active', type === 'resident');
+        }
+    </script>
+</body>
+</html>
+

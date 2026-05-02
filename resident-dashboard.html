@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAWAS - Resident Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">♻️</div>
+            <div class="header-title">
+                <h1>BAWAS</h1>
+                <p>Waste Management System</p>
+            </div>
+        </div>
+        <div class="user-info">
+            <div class="header-barangay-badge" id="currentBarangay"></div>
+            <div class="header-user"><span>👤</span> Resident</div>
+            <button class="announcement-btn" onclick="toggleAnnouncements()" title="Announcements">
+                📢
+                <span class="announcement-badge" id="annBadge" style="display:none;">0</span>
+            </button>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- Announcement Modal -->
+    <div class="modal-overlay" id="announcementModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>📢 Announcements</h3>
+                <button class="modal-close" onclick="toggleAnnouncements()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="announcementsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="barangay-selector" id="barangaySelector">
+        <!-- Animated background particles -->
+        <div class="particles" id="particles"></div>
+
+        <div class="barangay-card">
+            <div class="barangay-card-icon">♻️</div>
+            <h1>BAWAS</h1>
+            <p class="barangay-card-sub">Barangay Waste Monitoring and Management Platform</p>
+            <div class="barangay-divider"></div>
+            <h2>Select Your Barangay</h2>
+            <p class="barangay-card-hint">Choose your barangay to continue</p>
+            <select id="barangaySelect">
+                <option value="">-- Select Barangay --</option>
+                <option value="Barangay 1">Barangay 1</option>
+                <option value="Barangay 2">Barangay 2</option>
+                <option value="Barangay 3">Barangay 3</option>
+                <option value="Barangay 4">Barangay 4</option>
+                <option value="Barangay 5">Barangay 5</option>
+            </select>
+            <button class="barangay-btn" onclick="selectBarangay()">Continue →</button>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent" style="display: none;">
+        <div id="dashboardParticles" class="particles"></div>
+        <div class="content">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="section active">
+                <div class="page-header"><div class="page-header-inner"><h2>Dashboard</h2></div></div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card green" onclick="showSection('analytics')" style="cursor: pointer;">
+                        <div class="stat-card-icon-wrap">
+                            <span class="stat-card-icon animate-bounce">🚛</span>
+                        </div>
+                        <h3>Waste Collected</h3>
+                        <p class="stat-value" id="totalWaste">0</p>
+                        <p class="stat-label">kg total</p>
+                    </div>
+                    <div class="stat-card blue" onclick="showSection('schedules')" style="cursor: pointer;">
+                        <div class="stat-card-icon-wrap">
+                            <span class="stat-card-icon animate-pulse">📅</span>
+                        </div>
+                        <h3>Schedules</h3>
+                        <p class="stat-value" id="upcomingSchedules">0</p>
+                        <p class="stat-label">Upcoming</p>
+                    </div>
+                    <div class="stat-card orange" onclick="showSection('reports')" style="cursor: pointer;">
+                        <div class="stat-card-icon-wrap">
+                            <span class="stat-card-icon animate-shake">⚠️</span>
+                        </div>
+                        <h3>Reports</h3>
+                        <p class="stat-value" id="pendingReports">0</p>
+                        <p class="stat-label">Alerts</p>
+                    </div>
+                    <div class="stat-card teal" onclick="showSection('analytics')" style="cursor: pointer;">
+                        <div class="stat-card-icon-wrap">
+                            <span class="stat-card-icon animate-spin-slow">♻️</span>
+                        </div>
+                        <h3>Recycling Rate</h3>
+                        <p class="stat-value" id="recyclingRate">0</p>
+                        <p class="stat-label">%</p>
+                    </div>
+                </div>
+
+                <div class="collection-schedule-section">
+                    <h3>Collection Schedule</h3>
+                    <div id="dashboardSchedules"></div>
+                </div>
+
+                <div class="recent-alerts">
+                    <div id="alertsList"></div>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="reports" class="section">
+                <div class="page-header"><div class="page-header-inner"><h2>Community Reports</h2></div></div>
+                <button class="btn-report" onclick="showSection('dashboard')">← Back to Dashboard</button>
+                <button class="btn-report" onclick="showSection('submitReport')">+ Report an Issue</button>
+
+                <div class="reports-toolbar">
+                    <input class="reports-search" type="text" id="reportSearch" placeholder="🔍  Search reports..." oninput="filterReports()">
+                    <select class="reports-filter" id="reportFilter" onchange="filterReports()">
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                    <span class="reports-count" id="reportsCount"></span>
+                </div>
+
+                <div class="reports-list-container">
+                    <div class="reports-list-header">
+                        <div></div>
+                        <div>Issue</div>
+                        <div>Purok</div>
+                        <div>Submitted</div>
+                        <div></div>
+                    </div>
+                    <div id="reportsList"></div>
+                </div>
+            </div>
+
+            <!-- Submit Report Section -->
+            <div id="submitReport" class="section">
+                <div class="page-header"><div class="page-header-inner"><h2>Report an Issue</h2></div></div>
+                
+                <div class="report-form-wrapper">
+                    <div class="report-form-card">
+
+                        <!-- Back button inside card -->
+                        <button class="btn-back" onclick="showSection('reports')">← Back to Reports</button>
+
+                        <h3 class="report-form-title">📋 Submit a Waste Report</h3>
+                        <p class="report-form-subtitle">Fill in the details below and we'll notify the barangay admin.</p>
+
+                        <div class="report-form-grid">
+                            <!-- Left column -->
+                            <div>
+                                <div class="form-group">
+                                    <label>Select Purok</label>
+                                    <select id="reportPurok">
+                                        <option value="Purok 1">Purok 1</option>
+                                        <option value="Purok 2">Purok 2</option>
+                                        <option value="Purok 3">Purok 3</option>
+                                        <option value="Purok 4">Purok 4</option>
+                                        <option value="Purok 5">Purok 5</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Waste Type</label>
+                                    <select id="reportWasteType">
+                                        <option value="Mixed Waste">Mixed Waste</option>
+                                        <option value="Plastic & Glass">Plastic & Glass</option>
+                                        <option value="Organic">Organic</option>
+                                        <option value="Paper">Paper</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Issue Type</label>
+                                    <div class="button-group">
+                                        <button class="issue-btn" onclick="selectIssueType('Garbage Overflow')">Garbage Overflow</button>
+                                        <button class="issue-btn" onclick="selectIssueType('Illegal Dumping')">Illegal Dumping</button>
+                                        <button class="issue-btn" onclick="selectIssueType('Other')">Other</button>
+                                    </div>
+                                    <input type="hidden" id="issueType">
+                                </div>
+                            </div>
+
+                            <!-- Right column -->
+                            <div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="reportDescription" rows="5" placeholder="Describe the issue in detail..."></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Upload Photo <span style="color:#aaa; font-weight:400;">(optional)</span></label>
+                                    <div class="file-upload-box">
+                                        <input type="file" id="reportPhoto" accept="image/*" style="display: none;">
+                                        <button class="btn-choose-file" onclick="document.getElementById('reportPhoto').click()">📎 Choose File</button>
+                                        <span id="fileName" style="margin-left: 10px; color: #999; font-size:13px;">No file chosen</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Early Collection -->
+                        <div class="early-collection-box">
+                            <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:15px; font-weight:600; color:#1976D2;">
+                                <input type="checkbox" id="earlyCollectionCheck" onchange="toggleEarlyCollection()" style="width:18px; height:18px;">
+                                Request Early Collection <span style="font-weight:400; color:#888;">(fee applies per bag)</span>
+                            </label>
+                            <div id="earlyCollectionForm" style="display:none; margin-top:16px;">
+                                <div id="feeDisplay" style="background:#e3f2fd; color:#1565C0; padding:12px 16px; border-radius:8px; margin-bottom:12px; font-size:14px; font-weight:600;"></div>
+                                <div class="report-form-grid">
+                                    <div class="form-group">
+                                        <label>Number of Bags <span style="color:#aaa; font-weight:400;">(min. 5)</span></label>
+                                        <input type="number" id="bagCount" min="5" placeholder="e.g. 5" oninput="calculateFee()">
+                                    </div>
+                                    <div id="totalFeeDisplay" style="display:none; background:#1976D2; color:white; padding:14px; border-radius:10px; font-size:18px; font-weight:bold; text-align:center; align-self:center;"></div>
+                                </div>
+                                <div id="gcashDetails" style="background:#e8f5e9; border-radius:8px; padding:14px; margin-bottom:12px; font-size:14px;"></div>
+                                <div class="form-group">
+                                    <label>GCash Payment Screenshot</label>
+                                    <div class="file-upload-box">
+                                        <input type="file" id="paymentProof" accept="image/*" style="display:none;" onchange="handleProofUpload(this)">
+                                        <button class="btn-choose-file" onclick="document.getElementById('paymentProof').click()">📎 Choose Screenshot</button>
+                                        <span id="proofFileName" style="margin-left:10px; color:#999; font-size:13px;">No file chosen</span>
+                                    </div>
+                                    <div id="proofPreview" style="margin-top:10px; display:none;">
+                                        <img id="proofPreviewImg" src="" alt="Payment proof preview"
+                                            style="max-width:200px; border-radius:10px; border:2px solid #ddd; cursor:zoom-in;"
+                                            onclick="openLightbox(this.src)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="report-form-footer">
+                            <button class="btn-submit-report" onclick="submitReport()">Submit Report →</button>
+                            <div id="reportMessage"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedules Section -->
+            <div id="schedules" class="section">
+                <div class="page-header"><div class="page-header-inner"><h2>Collection Schedules</h2></div></div>
+                <button class="btn-report" onclick="showSection('dashboard')">← Back to Dashboard</button>
+                <div id="schedulesList"></div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analytics" class="section">
+                <div class="page-header"><div class="page-header-inner"><h2>Waste Trends</h2></div></div>
+                <button class="btn-report" onclick="showSection('dashboard')">← Back to Dashboard</button>
+                
+                <div class="analytics-grid">
+                    <div class="stat-card green">
+                        <h3>Total Waste Collected</h3>
+                        <p class="stat-value" id="monthlyWaste">0</p>
+                        <p class="stat-label">kg - This Month</p>
+                    </div>
+                    <div class="stat-card blue">
+                        <h3>Recycling Rate</h3>
+                        <p class="stat-value" id="analyticsRecycling">0</p>
+                        <p class="stat-label">% - Current Rate</p>
+                    </div>
+                    <div class="stat-card orange">
+                        <h3>Collection Efficiency</h3>
+                        <p class="stat-value" id="collectionEfficiency">0</p>
+                        <p class="stat-label" id="efficiencyLabel">% — No past schedules yet</p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                    <div class="chart-container">
+                        <h3>Waste Composition</h3>
+                        <canvas id="pieChart" width="300" height="300"></canvas>
+                        <div class="chart-legend" style="margin-top: 20px;">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #4CAF50;"></div>
+                                <span>Biodegradable: <strong id="bioPercentage">0%</strong></span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #FF9800;"></div>
+                                <span>Non-Biodegradable: <strong id="nonBioPercentage">0%</strong></span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #2196F3;"></div>
+                                <span>Recyclable: <strong id="recPercentage">0%</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>Monthly Waste Trend</h3>
+                        <div id="lineChart" style="width:100%; min-height:260px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="resident.js"></script>
+
+    <!-- Report Detail Modal -->
+    <div class="report-detail-overlay" id="reportDetailModal" onclick="closeReportDetail(event)">
+        <div class="report-detail-box">
+            <div class="report-detail-header">
+                <h3 id="detailTitle">Report Details</h3>
+                <button class="report-detail-close" onclick="closeReportDetailBtn()">✕</button>
+            </div>
+            <div class="report-detail-body" id="reportDetailBody"></div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+        <img id="lightboxImg" src="" alt="Full view" onclick="event.stopPropagation()">
+    </div>
+
+    <script>
+        const dashEmojis = ['♻️','🌿','🍃','🌱','💧','🌍','🗑️','🌾','🍀'];
+        const dashContainer = document.getElementById('dashboardParticles');
+        function spawnDashParticle() {
+            if (!dashContainer) return;
+            const el = document.createElement('div');
+            el.className = 'particle';
+            el.textContent = dashEmojis[Math.floor(Math.random() * dashEmojis.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.fontSize = (14 + Math.random() * 16) + 'px';
+            const dur = 8 + Math.random() * 10;
+            el.style.animationDuration = dur + 's';
+            el.style.animationDelay = (Math.random() * 3) + 's';
+            dashContainer.appendChild(el);
+            setTimeout(() => el.remove(), (dur + 4) * 1000);
+        }
+        for (let i = 0; i < 15; i++) spawnDashParticle();
+        setInterval(spawnDashParticle, 1200);
+    </script>
+    </div>
+
+    <script>
+        // ── Particle animation ──
+        const emojis = ['♻️','🌿','🍃','🌱','💧','🌍','🗑️','🌾','🍀'];
+        const container = document.getElementById('particles');
+        function spawnParticle() {
+            if (!container) return;
+            const el = document.createElement('div');
+            el.className = 'particle';
+            el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.fontSize = (16 + Math.random() * 20) + 'px';
+            const dur = 6 + Math.random() * 8;
+            el.style.animationDuration = dur + 's';
+            el.style.animationDelay = (Math.random() * 4) + 's';
+            container.appendChild(el);
+            setTimeout(() => el.remove(), (dur + 4) * 1000);
+        }
+        // Only spawn if barangay selector is visible
+        const barangaySel = document.getElementById('barangaySelector');
+        if (barangaySel && barangaySel.style.display !== 'none') {
+            for (let i = 0; i < 18; i++) spawnParticle();
+            setInterval(spawnParticle, 800);
+        }
+    </script>
+</body>
+</html>
+
